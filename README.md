@@ -45,6 +45,7 @@ cd windows-domain_controller
 packer build -var iso_url=14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO -var iso_checksum=70721288bbcdfe3239d8f8c0fae55f1f windows_2016_domain_controller.json
 ```
 
+#### 3. Start Vagrant Box
 ```
 vagrant box add --name windows_2016_domain_controller_virtualbox  windows_2016_domain_controller_virtualbox.box
 ```
@@ -53,14 +54,14 @@ vagrant box add --name windows_2016_domain_controller_virtualbox  windows_2016_d
 vagrant up
 ```
 
-#### 3. Check Windows Connectivity:
+#### 4. Check Connectivity:
 
 ```
 cd ..
 ```
 
 ```
-ansible all -m win_ping -i ansible/inventory
+ansible domaincontroller -m win_ping -i ansible/inventory
 ```
 
 On Mac, if you get this error:
@@ -76,8 +77,40 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 ### Client: CentOS Linux Vagrant Box
 
+#### 1. Start Vagrant Box
+
+The centos client only has to be started. It will automatically download the Vagrant Box if necessary.
+
 ```
-TBD
+cd centos-client
+```
+
+```
+vagrant up
+```
+
+#### 2. Check Connectivity
+
+```
+cd ..
+```
+
+Disable HostKey checking at 1st execution (SSH key exchange)
+
+```
+export ANSIBLE_HOST_KEY_CHECKING=False
+```
+
+Ping machine
+
+```
+ansible centos -m ping -i ansible/inventory
+```
+
+Enable HostKey checking again
+
+```
+unset ANSIBLE_HOST_KEY_CHECKING
 ```
 
 ## Setting Up The Domain
