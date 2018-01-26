@@ -1,6 +1,6 @@
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "windows_2016_domain_controller"
+  config.vm.box = "windows_2016_domain_controller_virtualbox"
   config.vm.network "private_network", ip: "172.16.2.50"
 
   config.vm.provider "virtualbox" do |virtualbox|
