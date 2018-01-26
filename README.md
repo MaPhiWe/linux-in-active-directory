@@ -7,41 +7,36 @@ This repository is built on the superior work of my colleagues:
 
 The purpose of this repository is to illustrate how to connect a Linux system with Active Directory so that users and groups are configured in AD exclusively.
 
-
-# Setup: The demo environment
-
 The project uses [Vagrant](https://www.vagrantup.com/) and [Ansible](https://docs.ansible.com) to provision a Windows Domain Controller. Then, a Linux system is created and linked to Active Directory.
 
+## Tools: VirtualBox, Packer, Vagrant, Ansible
 
-#### a) Installation of VirtualBox, Packer, Vagrant, Ansible
-
-###### on Mac via [brew](https://brew.sh/index_de.html)
+#### Mac via [brew](https://brew.sh/index_de.html)
 * `brew install packer`
 * `brew cask install virtualbox`
 * `brew cask install vagrant`
 * `brew install python`
 * `pip install ansible`
 
-###### on Windows via [chocolatey](https://chocolatey.org/)
-* `choco install packer`
-* `choco install virtualbox`
-* `choco install vagrant`
-* TBD: Ansible
+#### Linux - use your package manager
 
-###### on Linux - use your package manager
+#### Windows
+Running Ansible from a Windows machine is beyond the scope of this document. Check [Jonas' Ansible on Linux Workshop](https://github.com/jonashackt/ansible-linux-windows-workshop) if you need to use this (German only though).
 
-#### Windows Server 2016 Vagrant Box:
+## Provisioning the Demo Data Center
+
+### Domain Controller: Windows Server 2016 Vagrant Box
 
 [How to legally create a Windows VagrantBox](https://blog.codecentric.de/en/2017/04/ansible-docker-windows-containers-spring-boot/).
 
 
-###### 1.) Download ISO
+#### 1. Download ISO
 
 https://www.microsoft.com/de-de/evalcenter/evaluate-windows-server-2016
 
 Copy file into directory `windows-domain-controller`.
 
-###### 2.) Create Vagrant Box with Packer
+#### 2. Create Vagrant Box with Packer
 ```
 cd windows-domain_controller
 ```
@@ -58,7 +53,7 @@ vagrant box add --name windows_2016_domain_controller_virtualbox  windows_2016_d
 vagrant up
 ```
 
-###### 3.) Check Windows Connectivity:
+#### 3. Check Windows Connectivity:
 
 ```
 cd ..
@@ -77,4 +72,38 @@ objc[24289]: +[__NSPlaceholderDate initialize] may have been in progress in anot
 then [disable the Fork Safety](https://github.com/ansible/ansible/issues/31869)
 ```
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+```
+
+### Client: CentOS Linux Vagrant Box
+
+```
+TBD
+```
+
+## Setting Up the Domain
+
+### Creating the Domain controller
+
+The whole domain setup is automated by this Ansible playbook:
+
+```
+ansible-playbook ansible/domain_controller.yml -i ansible/inventory
+```
+
+### Creating Domain Users and Groups
+
+```
+TBD
+```
+
+## Connecting the Clients to the Domain
+
+```
+TBD
+```
+
+## Valiating the Setup
+
+```
+TBD
 ```
