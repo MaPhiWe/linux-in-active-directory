@@ -58,8 +58,23 @@ vagrant box add --name windows_2016_domain_controller_virtualbox  windows_2016_d
 vagrant up
 ```
 
-Check Windows Connectivity:
+###### 3.) Check Windows Connectivity:
 
 ```
-ansible all -m win_ping -i inventoryStuttgart
+cd ..
+```
+
+```
+ansible all -m win_ping -i ansible/inventory
+```
+
+On Mac, if you get this error:
+```
+objc[24289]: +[__NSPlaceholderDate initialize] may have been in progress in another thread when fork() was called.
+objc[24289]: +[__NSPlaceholderDate initialize] may have been in progress in another thread when fork() was called. We cannot safely call it or ignore it in the fork() child process. Crashing instead. Set a breakpoint on objc_initializeAfterForkError to debug.
+```
+
+then [disable the Fork Safety](https://github.com/ansible/ansible/issues/31869)
+```
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ```
