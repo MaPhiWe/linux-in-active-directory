@@ -43,7 +43,7 @@ Copy file into directory `windows-domain-controller`.
 
 ###### 2.) Create Vagrant Box with Packer
 ```
-cd windows-domain-controller
+cd windows-domain_controller
 ```
 
 ```
