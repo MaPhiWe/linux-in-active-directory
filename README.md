@@ -1,4 +1,4 @@
-Using Linux with Active Directory
+Using Linux With Active Directory
 ======================================================================================
 
 This repository is built on the superior work of my colleagues:
@@ -23,7 +23,7 @@ The project uses [Vagrant](https://www.vagrantup.com/) and [Ansible](https://doc
 #### Windows
 Running Ansible from a Windows machine is beyond the scope of this document. Check [Jonas' Ansible on Linux Workshop](https://github.com/jonashackt/ansible-linux-windows-workshop) if you need to use this (German only though).
 
-## Provisioning the Demo Data Center
+## Provisioning The Demo Data Center
 
 ### Domain Controller: Windows Server 2016 Vagrant Box
 
@@ -36,7 +36,7 @@ https://www.microsoft.com/de-de/evalcenter/evaluate-windows-server-2016
 
 Copy file into directory `windows-domain-controller`.
 
-#### 2. Create Vagrant Box with Packer
+#### 2. Create Vagrant Box With Packer
 ```
 cd windows-domain_controller
 ```
@@ -80,9 +80,9 @@ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 TBD
 ```
 
-## Setting Up the Domain
+## Setting Up The Domain
 
-### Creating the Domain controller
+### Creating The Domain Controller
 
 The whole domain setup is automated by this Ansible playbook:
 
@@ -90,19 +90,19 @@ The whole domain setup is automated by this Ansible playbook:
 ansible-playbook ansible/domain_controller.yml -i ansible/inventory
 ```
 
-### Creating Domain Users and Groups
+### Creating Domain Users & Groups
+
+```
+ansible-playbook ansible/domain_groups_and_users.yml -i ansible/inventory
+```
+
+## Connecting Linux To The Domain
 
 ```
 TBD
 ```
 
-## Connecting the Clients to the Domain
-
-```
-TBD
-```
-
-## Valiating the Setup
+## Validating The Setup
 
 ```
 TBD

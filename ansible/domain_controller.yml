@@ -9,13 +9,12 @@
     win_domain:
       dns_domain_name: linuxdc.vagrant
       safe_mode_password: password123!
-      log_path: c:\ansible_win_domain_controller1.txt
+      log_path: c:\ansible_win_domain_controller_create.txt
     register: win_domain_result
 
   - name: Reboot server if changes were made
     when: win_domain_result.reboot_required
     win_reboot:
-
 
   - name: Ensure that the server is a domain controller
     win_domain_controller:
@@ -24,4 +23,4 @@
       domain_admin_password: password123!
       safe_mode_password: password123!
       state: domain_controller
-      log_path: c:\ansible_win_domain_controller2.txt
+      log_path: c:\ansible_win_domain_controller.txt

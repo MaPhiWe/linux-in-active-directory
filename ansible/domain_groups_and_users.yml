@@ -1,0 +1,57 @@
+# setting up the groups important_users and standard_users
+# also setting up users Alice, Bob, Carol, and Dave
+#   Alice is a member of important_users
+#   Bob is a member of standard_users
+#   Carol is a member of both groups
+#   Dave is not a member of either group
+
+- hosts: domaincontroller
+  tasks:
+  - name: Ensure the group important_users exists
+    win_domain_group:
+      name: important_users
+      scope: global
+      path: CN=Users,DC=linuxdc,DC=vagrant
+      description: The important people in the company
+
+  - name: Ensure the group standard_users exists
+    win_domain_group:
+      name: standard_users
+      scope: global
+      path: CN=Users,DC=linuxdc,DC=vagrant
+      description: The regular people in the company
+
+  - name: Create Alice
+    win_domain_user:
+      name: Alice
+      description: User for Alice
+      password: A1+bcde
+      state: present
+      groups:
+        - important_users
+
+  - name: Create Bob
+    win_domain_user:
+      name: Bob
+      description: User for Bob
+      password: A1+bcde
+      state: present
+      groups:
+        - standard_users
+
+  - name: Create Carol
+    win_domain_user:
+      name: Carol
+      description: User for Carol
+      password: A1+bcde
+      state: present
+      groups:
+        - important_users
+        - standard_users
+
+  - name: Create Dave
+    win_domain_user:
+      name: Dave
+      description: User for Dave
+      password: A1+bcde
+      state: present
