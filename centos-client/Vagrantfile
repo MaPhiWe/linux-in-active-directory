@@ -1,7 +1,7 @@
 Vagrant.configure("2") do |config|
 
     config.vm.box = "centos/7"
-    config.ssh.insert_key = false
+    config.ssh.insert_key = true
     config.vm.network "private_network", ip: "172.16.2.51"
 
     config.vm.provider :virtualbox do |virtualbox|

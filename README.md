@@ -95,22 +95,10 @@ vagrant up
 cd ..
 ```
 
-Disable HostKey checking at 1st execution (SSH key exchange)
-
-```
-export ANSIBLE_HOST_KEY_CHECKING=False
-```
-
 Ping machine
 
 ```
 ansible centos -m ping -i ansible/inventory
-```
-
-Enable HostKey checking again
-
-```
-unset ANSIBLE_HOST_KEY_CHECKING
 ```
 
 ## Setting Up The Domain
