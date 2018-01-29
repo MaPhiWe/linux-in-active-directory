@@ -1,0 +1,26 @@
+# Adding Linux machines to Active Directory
+
+- hosts: linux
+  vars:
+  - AD_DOMAIN_NAME: linuxdc.vagrant
+  - AD_DOMAINSERVER_IP: 172.16.2.50
+
+  tasks:
+  # Installed for nslookup tests on system; not required for setup
+  - name: Install the latest version of bind-utils
+    become: true
+    package:
+      name:  bind-utils
+      state: latest
+
+  - name: Configure domain controller as DNS server
+    become: true
+    template:
+        src: resolv.conf.j2
+        dest: /etc/resolv.conf
+
+  - name: Instantiante krb5.conf file and copy to target
+    become: true
+    template:
+      src: krb5.conf.j2
+      dest: /etc/krb5.conf
