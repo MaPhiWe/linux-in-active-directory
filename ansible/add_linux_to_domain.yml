@@ -2,8 +2,12 @@
 
 - hosts: linux
   vars:
+  - AD_WORKGROUP_NAME: linuxdc
   - AD_DOMAIN_NAME: linuxdc.vagrant
   - AD_DOMAINSERVER_IP: 172.16.2.50
+  - AD_ADMIN_NAME: chiefadmin
+  - AD_ADMIN_PASSWORD: password123!
+  # TODO: Rename Vars to make sense, move to global place, adjust other playbooks
 
   tasks:
 
@@ -13,7 +17,7 @@
   - name: Install the latest version of bind-utils
     become: true
     package:
-      name:  bind-utils
+      name: bind-utils
       state: latest
 
   - name: Configure domain controller as DNS server
@@ -29,11 +33,24 @@
       src: krb5.conf.j2
       dest: /etc/krb5.conf
 
+  - name: Install the latest version of krb5-libs
+    become: true
+    package:
+      name: krb5-libs
+      state: latest
+
+  - name: Install the latest version of krb5-workstation
+    become: true
+    package:
+      name: krb5-workstation
+      state: latest
+
+
   ##### NTP
   - name: Install the latest version of ntp
     become: true
     package:
-      name:  ntp
+      name: ntp
       state: latest
 
   - name: Configure domain controller as NTP server
@@ -49,3 +66,39 @@
     service:
       name: ntpd
       state: restarted
+
+  ##### Samba
+  - name: Install Samba
+    become: true
+    package:
+      name: samba
+      state: latest
+
+  - name: Find Samba config file location
+    shell: /usr/sbin/smbd -b | grep CONFIGFILE
+    register: smbd_conf_file
+
+  - name: Configure user map
+    become: true
+    template:
+      src: user.map.j2
+      dest: /etc/samba/user.map
+      # TODO: Use path of Samba config file instead
+
+  - name: Configure Samba
+    become: true
+    template:
+      src: smb.conf.j2
+      dest: '{{ smbd_conf_file.stdout | regex_replace("^\s*CONFIGFILE:\s*(\S*)\s*.*$", "\1") }}'
+    register: samba_config_result
+
+  - name: Restart Samba
+    when: samba_config_result.changed
+    become: true
+    service:
+      name: smb
+      state: restarted
+
+  - name: Join domain
+    become: true
+    command: net ads join -U {{AD_ADMIN_NAME}}%{{AD_ADMIN_PASSWORD}}
