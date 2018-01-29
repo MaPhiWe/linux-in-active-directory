@@ -1,0 +1,8 @@
+# Configuring a Linux host with a German, Mac-layout keyboard
+
+- hosts: linux
+  tasks:
+
+  - name: Set keyboard layout to German Mac
+    command: localectl set-keymap de-mac-nodeadkeys
+    become: yes
