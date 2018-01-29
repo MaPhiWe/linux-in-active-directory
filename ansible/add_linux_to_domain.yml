@@ -6,6 +6,9 @@
   - AD_DOMAINSERVER_IP: 172.16.2.50
 
   tasks:
+
+  ###### DNS
+
   # Installed for nslookup tests on system; not required for setup
   - name: Install the latest version of bind-utils
     become: true
@@ -19,8 +22,30 @@
         src: resolv.conf.j2
         dest: /etc/resolv.conf
 
+  ##### Kerberos
   - name: Instantiante krb5.conf file and copy to target
     become: true
     template:
       src: krb5.conf.j2
       dest: /etc/krb5.conf
+
+  ##### NTP
+  - name: Install the latest version of ntp
+    become: true
+    package:
+      name:  ntp
+      state: latest
+
+  - name: Configure domain controller as NTP server
+    become: true
+    template:
+      src: ntp.conf.j2
+      dest: /etc/ntp.conf
+    register: ntp_config_result
+
+  - name: Run ntp service
+    when: ntp_config_result.changed
+    become: true
+    service:
+      name: ntpd
+      state: restarted
