@@ -120,8 +120,32 @@ ansible-playbook ansible/domain_groups_and_users.yml -i ansible/inventory
 ## Connecting Linux To The Domain
 
 ```
-TBD
+ansible-playbook ansible/add_linux_to_domain.yml -i ansible/inventory
 ```
+
+### A note on DNS
+
+Connecting the Linux system to the Active Directory requires a stable DNS configuration.
+This is actually the most fragile part in the setup.
+
+The Linux system must know itself by the future FQDN already when requesting then
+join from the Domain Server. To accomplish this, the `etc/hosts` file must contain
+an entry for the FQDN, as the Domain Controller will only add the system to its
+own DNS database after the join.
+
+```
+172.16.2.51 centos-client.linuxdc.vagrant centos-client
+```
+
+Also, the join has a high likelihood to fail in the Vagrant environment because
+of NAT IP confusion. VirtualBox and Vagrant create an environment where all
+boxes share the same IP address on the first network interface - the NAT connection
+to the outside world. If the Linux box does receives multiple IP address responses
+when querying the Domain Controller address, errors during the join can happen.
+In this case, disable one of the network interfaces in the AD DNS configuration
+can help. 
+
+```TODO: Screenshot of AD screen where DNS listening can be configured```
 
 ## Validating The Setup
 

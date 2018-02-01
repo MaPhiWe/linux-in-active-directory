@@ -4,5 +4,5 @@
   tasks:
 
   - name: Set keyboard layout to German Mac
-    command: localectl set-keymap de-mac-nodeadkeys
+    command: localectl set-keymap de-mac
     become: yes

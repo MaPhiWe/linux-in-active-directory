@@ -5,8 +5,6 @@
   - AD_WORKGROUP_NAME: linuxdc
   - AD_DOMAIN_NAME: linuxdc.vagrant
   - AD_DOMAINSERVER_IP: 172.16.2.50
-  - AD_ADMIN_NAME: chiefadmin
-  - AD_ADMIN_PASSWORD: password123!
   # TODO: Rename Vars to make sense, move to global place, adjust other playbooks
 
   tasks:
@@ -25,6 +23,22 @@
     template:
         src: resolv.conf.j2
         dest: /etc/resolv.conf
+
+  - name: Get FQDN of system
+    command: hostname -f
+    register: hostname_result
+
+  - name: Reset /etc/hosts
+    when: hostname_result.stdout != "centos-client.linuxdc.vagrant"
+    become: true
+    template:
+        src: hosts.j2
+        dest: /etc/hosts
+
+  - name: Add system do /etc/hosts
+    when: hostname_result.stdout != "centos-client.linuxdc.vagrant"
+    become: true
+    shell: echo 172.16.2.51 centos-client.linuxdc.vagrant centos-client >> /etc/hosts
 
   ##### Kerberos
   - name: Instantiante krb5.conf file and copy to target
@@ -101,4 +115,5 @@
 
   - name: Join domain
     become: true
-    command: net ads join -U {{AD_ADMIN_NAME}}%{{AD_ADMIN_PASSWORD}}
+    command: net ads join -U vagrant%vagrant
+    # TODO remove hard-coded password
