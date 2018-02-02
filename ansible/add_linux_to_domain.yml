@@ -27,6 +27,7 @@
   - name: Get FQDN of system
     command: hostname -f
     register: hostname_result
+    changed_when: False
 
   - name: Reset /etc/hosts
     when: hostname_result.stdout != "centos-client.linuxdc.vagrant"
@@ -59,7 +60,6 @@
       name: krb5-workstation
       state: latest
 
-
   ##### NTP
   - name: Install the latest version of ntp
     become: true
@@ -91,6 +91,7 @@
   - name: Find Samba config file location
     shell: /usr/sbin/smbd -b | grep CONFIGFILE
     register: smbd_conf_file
+    changed_when: False
 
   - name: Configure user map
     become: true
@@ -117,6 +118,7 @@
     become: true
     command: net ads join -U vagrant%vagrant
     # TODO remove hard-coded password
+    # TODO register on output and set changed_when: False when already in domain
 
   ###### winbind
 
@@ -146,3 +148,31 @@
 
   - name: Verify connection to AD users and groups
     command: getent group standard_users
+    changed_when: False
+
+  ##### activate auto-creation of home directories
+  - name: Ensure that Bob's home directory does not exist
+    become: true
+    file:
+      path: /home/bob
+      state: absent
+
+  - name: Enable auto-creation of home Directory
+    become: true
+    command: authconfig --enablemkhomedir --update
+    # TODO register on output and set changed_when: False when already in domain
+
+  - name: Log in as Bob
+    become: true
+    shell: su - bob
+    args:
+      warn: no
+    changed_when: False
+
+  - name: Ensure that Bob's home directory does exist
+    become: true
+    stat:
+      path: /home/bob
+    register: stat_result
+
+  - assert: { that: stat_result.stat.exists }
