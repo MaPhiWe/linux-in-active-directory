@@ -117,3 +117,32 @@
     become: true
     command: net ads join -U vagrant%vagrant
     # TODO remove hard-coded password
+
+  ###### winbind
+
+  - name: Configure Name Service Switch to use winbind
+    become: true
+    template:
+      src: nsswitch.conf.j2
+      dest: /etc/nsswitch.conf
+
+  - name: Install the latest version of winbind
+    become: true
+    package:
+      name: samba-winbind
+      state: latest
+
+  - name: Install the latest version of winbind-clients
+    become: true
+    package:
+      name: samba-winbind-clients
+      state: latest
+
+  - name: Start windbind
+    become: true
+    service:
+      name: winbind
+      state: started
+
+  - name: Verify connection to AD users and groups
+    command: getent group standard_users
