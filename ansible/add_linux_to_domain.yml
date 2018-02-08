@@ -3,8 +3,12 @@
 - hosts: linux
   vars:
   - AD_WORKGROUP_NAME: linuxdc
-  - AD_DOMAIN_NAME: linuxdc.vagrant
+  - AD_TLD: vagrant
+  - AD_DOMAIN_NAME: '{{AD_WORKGROUP_NAME}}.{{AD_TLD}}'
   - AD_DOMAINSERVER_IP: 172.16.2.50
+  - LINUX_USERNAME: vagrant
+  - LINUX_PASSWORD: vagrant
+
   # TODO: Rename Vars to make sense, move to global place, adjust other playbooks
 
   tasks:
@@ -24,22 +28,11 @@
         src: resolv.conf.j2
         dest: /etc/resolv.conf
 
-  - name: Get FQDN of system
-    command: hostname -f
-    register: hostname_result
-    changed_when: False
-
-  - name: Reset /etc/hosts
-    when: hostname_result.stdout != "centos-client.linuxdc.vagrant"
+  - name: Configure /etc/hosts
     become: true
     template:
         src: hosts.j2
         dest: /etc/hosts
-
-  - name: Add system do /etc/hosts
-    when: hostname_result.stdout != "centos-client.linuxdc.vagrant"
-    become: true
-    shell: echo 172.16.2.51 centos-client.linuxdc.vagrant centos-client >> /etc/hosts
 
   ##### Kerberos
   - name: Instantiante krb5.conf file and copy to target
@@ -90,21 +83,23 @@
 
   - name: Find Samba config file location
     shell: /usr/sbin/smbd -b | grep CONFIGFILE
-    register: smbd_conf_file
+    register: smbd_conf_file_result
     changed_when: False
+
+  - set_fact:
+      smbd_conf_file: '{{ smbd_conf_file_result.stdout | regex_replace("^\s*CONFIGFILE:\s*(\S*)\s*.*$", "\1") }}'
 
   - name: Configure user map
     become: true
     template:
       src: user.map.j2
-      dest: /etc/samba/user.map
-      # TODO: Use path of Samba config file instead
+      dest: '{{ smbd_conf_file | dirname }}/user.map'
 
   - name: Configure Samba
     become: true
     template:
       src: smb.conf.j2
-      dest: '{{ smbd_conf_file.stdout | regex_replace("^\s*CONFIGFILE:\s*(\S*)\s*.*$", "\1") }}'
+      dest: '{{ smbd_conf_file }}'
     register: samba_config_result
 
   - name: Restart Samba
@@ -114,14 +109,23 @@
       name: smb
       state: restarted
 
-  - name: Join domain
+  # This query is only allowed if the machine is in the domain.
+  # Failure means the domain join must be done.
+  - name: Test existing domain membership
+    command: net ads dn 'DC={{ AD_WORKGROUP_NAME }},DC={{ AD_TLD }}' -P
     become: true
-    command: net ads join -U vagrant%vagrant
-    # TODO remove hard-coded password
-    # TODO register on output and set changed_when: False when already in domain
+    changed_when: False
+    ignore_errors: yes
+    register: domain_query_result
+
+  - name: Join domain
+    when: domain_query_result.failed
+    become: true
+    command: net ads join -U '{{ LINUX_USERNAME }}%{{ LINUX_PASSWORD }}'
 
   ###### winbind
 
+  # TODO: Replace with lineinfile instead of templating
   - name: Configure Name Service Switch to use winbind
     become: true
     template:
