@@ -1,18 +1,9 @@
 # Adding Linux machines to Active Directory
 
 - hosts: linux
-  vars:
-  - AD_WORKGROUP_NAME: linuxdc
-  - AD_TLD: vagrant
-  - AD_DOMAIN_NAME: '{{AD_WORKGROUP_NAME}}.{{AD_TLD}}'
-  - AD_DOMAINSERVER_IP: 172.16.2.50
-  - LINUX_USERNAME: vagrant
-  - LINUX_PASSWORD: vagrant
-
-  # TODO: Rename Vars to make sense, move to global place, adjust other playbooks
 
   # TODO: remove the many become:true and change to run script as root
-  
+
   tasks:
 
   ###### DNS
@@ -35,6 +26,13 @@
     template:
         src: hosts.j2
         dest: /etc/hosts
+  - set_fact:
+      host_fqdn: '{{ inventory_hostname }}.{{ AD_DOMAIN_NAME }}'
+
+  - name: Ensure FQDN is correctly set up
+    command: hostname -f
+    register: hostname_result
+    failed_when: hostname_result.stdout != host_fqdn
 
   ##### Kerberos
   - name: Instantiante krb5.conf file and copy to target
@@ -91,11 +89,15 @@
   - set_fact:
       smbd_conf_file: '{{ smbd_conf_file_result.stdout | regex_replace("^\s*CONFIGFILE:\s*(\S*)\s*.*$", "\1") }}'
 
+  # need two set_facts because the first one is not yet visible otherwise
+  - set_fact:
+      smbd_map_file: '{{ smbd_conf_file | dirname }}/user.map'
+
   - name: Configure user map
     become: true
     template:
       src: user.map.j2
-      dest: '{{ smbd_conf_file | dirname }}/user.map'
+      dest: '{{ smbd_map_file }}'
 
   - name: Configure Samba
     become: true
