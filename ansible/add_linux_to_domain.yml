@@ -173,10 +173,16 @@
       path: /home/bob
       state: absent
 
-  - name: Enable auto-creation of home Directory
+  - name: Check if auto-creation of home directory is enabled
+    become: true
+    shell: authconfig --test | grep mkhomedir
+    register: authconfig_result
+    changed_when: False
+
+  - name: Enable auto-creation of home directory
+    when: "'disabled' in authconfig_result.stdout"
     become: true
     command: authconfig --enablemkhomedir --update
-    # TODO register on output and set changed_when: False when already in domain
 
   - name: Log in as Bob
     become: true
