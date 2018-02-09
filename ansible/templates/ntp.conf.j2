@@ -3,7 +3,7 @@ server 127.127.1.0
 fudge  127.127.1.0 stratum 10
 
 # Where to retrieve the time from
-server {{AD_DOMAINSERVER_IP}}     iburst prefer
+server {{ AD_DOMAINSERVER_IP }}     iburst prefer
 
 driftfile /var/lib/ntp/ntp.drift
 logfile   /var/log/ntp
@@ -17,4 +17,4 @@ restrict 127.0.0.1
 restrict ::1
 
 # Enable the time sources only to only provide time to this host
-restrict {{AD_DOMAINSERVER_IP}}   mask 255.255.255.255    nomodify notrap nopeer noquery
+restrict {{ AD_DOMAINSERVER_IP }}   mask 255.255.255.255    nomodify notrap nopeer noquery
