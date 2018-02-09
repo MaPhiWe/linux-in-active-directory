@@ -6,26 +6,27 @@
 #   Dave is not a member of either group
 
 - hosts: domaincontroller
+
   tasks:
   - name: Ensure the group important_users exists
     win_domain_group:
       name: important_users
       scope: global
-      path: CN=Users,DC=linuxdc,DC=vagrant
+      path: 'CN=Users,DC={{ AD_WORKGROUP_NAME }},DC={{ AD_TLD }}'
       description: The important people in the company
 
   - name: Ensure the group standard_users exists
     win_domain_group:
       name: standard_users
       scope: global
-      path: CN=Users,DC=linuxdc,DC=vagrant
+      path: 'CN=Users,DC={{ AD_WORKGROUP_NAME }},DC={{ AD_TLD }}'
       description: The regular people in the company
 
   - name: Create Alice
     win_domain_user:
       name: Alice
       description: User for Alice
-      password: A1+bcde
+      password: '{{ USER_PASSWORD }}'
       state: present
       groups:
         - important_users
@@ -34,7 +35,7 @@
     win_domain_user:
       name: Bob
       description: User for Bob
-      password: A1+bcde
+      password: '{{ USER_PASSWORD }}'
       state: present
       groups:
         - standard_users
@@ -43,7 +44,7 @@
     win_domain_user:
       name: Carol
       description: User for Carol
-      password: A1+bcde
+      password: '{{ USER_PASSWORD }}'
       state: present
       groups:
         - important_users
@@ -53,5 +54,5 @@
     win_domain_user:
       name: Dave
       description: User for Dave
-      password: A1+bcde
+      password: '{{ USER_PASSWORD }}'
       state: present
