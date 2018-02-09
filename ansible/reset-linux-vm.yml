@@ -1,0 +1,16 @@
+# Resetting the linux VMs for a fresh test run
+
+- hosts: ansible-hosts
+
+  tasks:
+  - name: Shut down Linux VMs
+    shell: cd {{ playbook_dir }}/../centos-client; vagrant halt
+
+  - name: Destroy Linux VMs
+    shell: cd {{ playbook_dir }}/../centos-client; vagrant destroy -f
+
+  - name: Clean known_hosts
+    lineinfile:
+      path: ~/.ssh/known_hosts
+      state: absent
+      regexp: '^172.16.2.51'

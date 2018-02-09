@@ -11,6 +11,8 @@
 
   # TODO: Rename Vars to make sense, move to global place, adjust other playbooks
 
+  # TODO: remove the many become:true and change to run script as root
+  
   tasks:
 
   ###### DNS
