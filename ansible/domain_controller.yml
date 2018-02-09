@@ -1,14 +1,13 @@
-# Setting up the domain linuxdc.vagrant with the domain controller
+# Setting up the domain and the domain controller
 
 - hosts: domaincontroller
   tasks:
 
-  # ensure the named domain is reachable from the target host;
-  # if not, create the domain in a new forest residing on the target host
+  # Creates the domain in a new forest if not yet existing
   - name: Ensure Windows domain exists
     win_domain:
-      dns_domain_name: linuxdc.vagrant
-      safe_mode_password: password123!
+      dns_domain_name: '{{ AD_DOMAIN_NAME }}'
+      safe_mode_password: '{{ AD_DOMAIN_PASSWORD }}'
       log_path: c:\ansible_win_domain_controller_create.txt
     register: win_domain_result
 
@@ -18,9 +17,9 @@
 
   - name: Ensure that the server is a domain controller
     win_domain_controller:
-      dns_domain_name: linuxdc.vagrant
-      domain_admin_user: chiefadmin@linuxdc.vagrant
-      domain_admin_password: password123!
-      safe_mode_password: password123!
+      dns_domain_name: '{{ AD_DOMAIN_NAME }}'
+      domain_admin_user: '{{ AD_DOMAIN_ADMIN_USER }}@{{ AD_DOMAIN_NAME }}'
+      domain_admin_password: '{{ AD_DOMAIN_PASSWORD }}'
+      safe_mode_password: '{{ AD_DOMAIN_PASSWORD }}'
       state: domain_controller
       log_path: c:\ansible_win_domain_controller.txt

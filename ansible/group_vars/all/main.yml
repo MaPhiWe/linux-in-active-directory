@@ -1,8 +1,10 @@
 # Domain configuration
 AD_WORKGROUP_NAME: linuxdc
 AD_TLD: vagrant
-AD_DOMAIN_NAME: '{{AD_WORKGROUP_NAME}}.{{AD_TLD}}'
+AD_DOMAIN_NAME: '{{ AD_WORKGROUP_NAME }}.{{ AD_TLD }}'
 AD_DOMAINSERVER_IP: 172.16.2.50
+AD_DOMAIN_ADMIN_USER: chiefadmin
+AD_DOMAIN_PASSWORD: password123!
 
 # Linux access credentials
 LINUX_USERNAME: vagrant
