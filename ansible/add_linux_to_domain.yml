@@ -1,8 +1,8 @@
 # Adding Linux machines to Active Directory
 
 - hosts: linux
-
-  # TODO: remove the many become:true and change to run script as root
+  remote_user: root
+  become: yes
 
   tasks:
 
@@ -10,22 +10,20 @@
 
   # Installed for nslookup tests on system; not required for setup
   - name: Install the latest version of bind-utils
-    become: true
     package:
       name: bind-utils
       state: latest
 
   - name: Configure domain controller as DNS server
-    become: true
     template:
         src: resolv.conf.j2
         dest: /etc/resolv.conf
 
   - name: Configure /etc/hosts
-    become: true
     template:
         src: hosts.j2
         dest: /etc/hosts
+
   - set_fact:
       host_fqdn: '{{ inventory_hostname }}.{{ AD_DOMAIN_NAME }}'
 
@@ -37,32 +35,27 @@
 
   ##### Kerberos
   - name: Instantiante krb5.conf file and copy to target
-    become: true
     template:
       src: krb5.conf.j2
       dest: /etc/krb5.conf
 
   - name: Install the latest version of krb5-libs
-    become: true
     package:
       name: krb5-libs
       state: latest
 
   - name: Install the latest version of krb5-workstation
-    become: true
     package:
       name: krb5-workstation
       state: latest
 
   ##### NTP
   - name: Install the latest version of ntp
-    become: true
     package:
       name: ntp
       state: latest
 
   - name: Configure domain controller as NTP server
-    become: true
     template:
       src: ntp.conf.j2
       dest: /etc/ntp.conf
@@ -70,14 +63,12 @@
 
   - name: Run ntp service
     when: ntp_config_result.changed
-    become: true
     service:
       name: ntpd
       state: restarted
 
   ##### Samba
   - name: Install Samba
-    become: true
     package:
       name: samba
       state: latest
@@ -95,13 +86,11 @@
       smbd_map_file: '{{ smbd_conf_file | dirname }}/user.map'
 
   - name: Configure user map
-    become: true
     template:
       src: user.map.j2
       dest: '{{ smbd_map_file }}'
 
   - name: Configure Samba
-    become: true
     template:
       src: smb.conf.j2
       dest: '{{ smbd_conf_file }}'
@@ -109,7 +98,6 @@
 
   - name: Restart Samba
     when: samba_config_result.changed
-    become: true
     service:
       name: smb
       state: restarted
@@ -118,46 +106,39 @@
   # Failure means the domain join must be done.
   - name: Test existing domain membership
     command: net ads dn 'DC={{ AD_WORKGROUP_NAME }},DC={{ AD_TLD }}' -P
-    become: true
     changed_when: False
     ignore_errors: yes
     register: domain_query_result
 
   - name: Join domain
     when: domain_query_result.failed
-    become: true
     command: net ads join -U '{{ LINUX_USERNAME }}%{{ LINUX_PASSWORD }}'
 
   ###### winbind
 
   - name: Configure passwords in Name Service Switch to use winbind
-    become: true
     lineinfile:
       path: /etc/nsswitch.conf
       regexp: '^passwd'
       line: 'passwd: files winbind'
 
   - name: Configure groups in Name Service Switch to use winbind
-    become: true
     lineinfile:
       path: /etc/nsswitch.conf
       regexp: '^group'
       line: 'group:  files winbind'
 
   - name: Install the latest version of winbind
-    become: true
     package:
       name: samba-winbind
       state: latest
 
   - name: Install the latest version of winbind-clients
-    become: true
     package:
       name: samba-winbind-clients
       state: latest
 
   - name: Start windbind
-    become: true
     service:
       name: winbind
       state: started
@@ -168,31 +149,26 @@
 
   ##### activate auto-creation of home directories
   - name: Ensure that Bob's home directory does not exist
-    become: true
     file:
       path: /home/bob
       state: absent
 
   - name: Check if auto-creation of home directory is enabled
-    become: true
     shell: authconfig --test | grep mkhomedir
     register: authconfig_result
     changed_when: False
 
   - name: Enable auto-creation of home directory
     when: "'disabled' in authconfig_result.stdout"
-    become: true
     command: authconfig --enablemkhomedir --update
 
   - name: Log in as Bob
-    become: true
     shell: su - bob
     args:
       warn: no
     changed_when: False
 
   - name: Ensure that Bob's home directory does exist
-    become: true
     stat:
       path: /home/bob
     register: stat_result
