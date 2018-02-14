@@ -143,7 +143,7 @@ boxes share the same IP address on the first network interface - the NAT connect
 to the outside world. If the Linux box does receives multiple IP address responses
 when querying the Domain Controller address, errors during the join can happen.
 In this case, disable one of the network interfaces in the AD DNS configuration
-can help. 
+can help.
 
 ```TODO: Screenshot of AD screen where DNS listening can be configured```
 
@@ -152,3 +152,8 @@ can help.
 ```
 TBD
 ```
+
+## Other Ansible Helper Scripts
+
+* **keyboard_german_mac.yml:** Configures the keyboard of the Linux VMs to a German Mac layout.  
+* **reset-linux-vm.yml:** Destroys the Linux VMs and cleans up the ssh known_hosts file.
