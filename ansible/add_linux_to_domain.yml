@@ -147,6 +147,9 @@
     command: getent group standard_users
     changed_when: False
 
+  - name: Enable PAM to use windbind
+    command: authconfig --enablewinbindauth --update
+
   ##### activate auto-creation of home directories
   - name: Ensure that Bob's home directory does not exist
     file:
@@ -155,15 +158,15 @@
 
   - name: Check if auto-creation of home directory is enabled
     shell: authconfig --test | grep mkhomedir
-    register: authconfig_result
+    register: authconfig_mkhomedir_result
     changed_when: False
 
   - name: Enable auto-creation of home directory
-    when: "'disabled' in authconfig_result.stdout"
+    when: "'disabled' in authconfig_mkhomedir_result.stdout"
     command: authconfig --enablemkhomedir --update
 
   - name: Log in as Bob
-    shell: su - bob
+    shell: su --login bob
     args:
       warn: no
     changed_when: False
