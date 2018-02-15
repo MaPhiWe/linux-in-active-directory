@@ -119,8 +119,18 @@ ansible-playbook ansible/domain_groups_and_users.yml -i ansible/inventory
 
 ## Connecting Linux To The Domain
 
+There are two alternative scripts to add the linux system to the domain. One is using SSSD, the other Samba winbind. Choose your preferred option.
+
+#### SSSD
+
 ```
-ansible-playbook ansible/add_linux_to_domain.yml -i ansible/inventory
+ansible-playbook ansible/add_linux_to_domain_with_sssd.yml -i ansible/inventory
+```
+
+#### winbind
+
+```
+ansible-playbook ansible/add_linux_to_domain_with_winbind.yml -i ansible/inventory
 ```
 
 ### A note on DNS
@@ -149,9 +159,9 @@ can help.
 
 ## Validating The Setup
 
-```
-TBD
-```
+At this time, you can log into the Linux box with the Windows users.
+
+The winbind variant resolves the domain automatically, so simple usernames (`bob`) will work. The ssd variant expects full names (`bob@linuxdc.vagrant`). The password is `A1+bcde`.
 
 ## Other Ansible Helper Scripts
 
