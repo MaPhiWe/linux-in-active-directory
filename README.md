@@ -166,4 +166,5 @@ The winbind variant resolves the domain automatically, so simple usernames (`bob
 ## Other Ansible Helper Scripts
 
 * **keyboard_german_mac.yml:** Configures the keyboard of the Linux VMs to a German Mac layout.  
-* **reset-linux-vm.yml:** Destroys the Linux VMs and cleans up the ssh known_hosts file.
+* **reset_linux_vm.yml:** Destroys the Linux VMs and cleans up the ssh known_hosts file.
+* **start_cluster.yml:** Brings up all VMs.

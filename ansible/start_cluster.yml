@@ -1,0 +1,10 @@
+# Starting all VMs for a fresh test run
+
+- hosts: ansible-hosts
+
+  tasks:
+  - name: Start VMs
+    shell: cd {{ playbook_dir }}/../{{ item }}; vagrant up
+    with_items:
+      - "{{ groups['windows'] }}"
+      - "{{ groups['linux'] }}"
