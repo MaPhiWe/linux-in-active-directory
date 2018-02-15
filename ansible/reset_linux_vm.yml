@@ -4,13 +4,17 @@
 
   tasks:
   - name: Shut down Linux VMs
-    shell: cd {{ playbook_dir }}/../centos-client; vagrant halt
+    shell: cd {{ playbook_dir }}/../{{ item }}; vagrant halt
+    with_items:
+      - "{{ groups['linux'] }}"
 
   - name: Destroy Linux VMs
-    shell: cd {{ playbook_dir }}/../centos-client; vagrant destroy -f
+    shell: cd {{ playbook_dir }}/../{{ item }}; vagrant destroy -f
+    with_items:
+      - "{{ groups['linux'] }}"
 
   - name: Clean known_hosts
     lineinfile:
       path: ~/.ssh/known_hosts
       state: absent
-      regexp: '^172.16.2.51'
+      regexp: '^172.16.2.5'

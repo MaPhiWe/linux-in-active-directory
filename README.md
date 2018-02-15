@@ -105,7 +105,7 @@ ansible centos -m ping -i ansible/inventory
 
 ### Creating The Domain Controller
 
-The whole domain setup is automated by this Ansible playbook:
+The whole domain setup is automated by this Ansible playbook. It will take a while.
 
 ```
 ansible-playbook ansible/domain_controller.yml -i ansible/inventory

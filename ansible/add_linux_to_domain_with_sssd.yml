@@ -1,6 +1,6 @@
 # Adding Linux machines to Active Directory
 
-- hosts: linux
+- hosts: linux-sssd
   remote_user: root
   become: yes
 

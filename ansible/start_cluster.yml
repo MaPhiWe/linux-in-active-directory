@@ -5,6 +5,8 @@
   tasks:
   - name: Start VMs
     shell: cd {{ playbook_dir }}/../{{ item }}; vagrant up
+    register: start_result
+    changed_when: "'Machine booted and ready' in start_result.stdout"
     with_items:
       - "{{ groups['windows'] }}"
       - "{{ groups['linux'] }}"

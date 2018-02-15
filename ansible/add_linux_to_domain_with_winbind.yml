@@ -1,6 +1,6 @@
 # Adding Linux machines to Active Directory
 
-- hosts: linux
+- hosts: linux-winbind
   remote_user: root
   become: yes
 
