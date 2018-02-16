@@ -1,0 +1,26 @@
+# Adding Jenkins to Linux machines
+
+- hosts: centos
+  remote_user: root
+  become: yes
+
+  tasks:
+  - name: Add Jenkins repository
+    yum_repository:
+      name: jenkins
+      description: Jenkins yum repo
+      baseurl: http://pkg.jenkins.io/redhat
+      gpgkey: https://jenkins-ci.org/redhat/jenkins-ci.org.key
+
+  - name: Install latest version of Jenkis and Java
+    package:
+      name: '{{ item }}'
+      state: latest
+    with_items:
+      - jenkins
+      - java
+
+  - name: Start Jenkins service
+    service:
+      name: jenkins
+      state: started
