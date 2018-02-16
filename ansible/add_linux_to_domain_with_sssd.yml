@@ -1,6 +1,6 @@
 # Adding Linux machines to Active Directory
 
-- hosts: linux-sssd
+- hosts: sssd
   remote_user: root
   become: yes
 
@@ -32,22 +32,6 @@
     register: hostname_result
     changed_when: False
     failed_when: hostname_result.stdout != host_fqdn
-
-  # ##### Kerberos
-  # - name: Instantiante krb5.conf file and copy to target
-  #   template:
-  #     src: krb5.conf.j2
-  #     dest: /etc/krb5.conf
-  #
-  # - name: Install the latest version of krb5-libs
-  #   package:
-  #     name: krb5-libs
-  #     state: latest
-  #
-  # - name: Install the latest version of krb5-workstation
-  #   package:
-  #     name: krb5-workstation
-  #     state: latest
 
   ##### NTP
   - name: Install the latest version of ntp

@@ -4,23 +4,21 @@ windows-domain-controller ansible_host=172.16.2.50 ansible_user=vagrant ansible_
 [windows:children]
 domaincontroller
 
-[centos-sssd]
-centos-client-sssd ansible_host=172.16.2.51 ansible_user=vagrant ansible_ssh_private_key_file=centos-client-sssd/.vagrant/machines/default/virtualbox/private_key
-
-[centos-winbind]
-centos-client-winbind ansible_host=172.16.2.52 ansible_user=vagrant ansible_ssh_private_key_file=centos-client-winbind/.vagrant/machines/default/virtualbox/private_key
-
-[centos:children]
-centos-sssd
-centos-winbind
+[centos]
+centos-sssd    ansible_host=172.16.2.51 ansible_ssh_private_key_file=centos-sssd/.vagrant/machines/default/virtualbox/private_key
+centos-winbind ansible_host=172.16.2.52 ansible_ssh_private_key_file=centos-winbind/.vagrant/machines/default/virtualbox/private_key
 
 [linux:children]
 centos
 
-[linux-sssd:children]
+[linux:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_user=vagrant
+
+[sssd]
 centos-sssd
 
-[linux-winbind:children]
+[winbind]
 centos-winbind
 
 [ansible-hosts]
