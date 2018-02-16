@@ -155,13 +155,37 @@ when querying the Domain Controller address, errors during the join can happen.
 In this case, disable one of the network interfaces in the AD DNS configuration
 can help.
 
-```TODO: Screenshot of AD screen where DNS listening can be configured```
-
 ## Validating The Setup
 
 At this time, you can log into the Linux box with the Windows users.
 
 The winbind variant resolves the domain automatically, so simple usernames (`bob`) will work. The ssd variant expects full names (`bob@linuxdc.vagrant`). The password is `A1+bcde`.
+
+## Installing Jenkins
+
+Jenkins is used as a sample web application to show SSO with Windows.
+
+It can be installed with the command:
+
+```
+ansible-playbook ansible/install_jenkins.yml -i ansible/inventory
+```
+
+After that, the Jenkins UI can be reached on port 8080 of the systems:
+* [http://172.16.2.51:8080/](http://172.16.2.51:8080/)
+* [http://172.16.2.52:8080/](http://172.16.2.52:8080/)
+
+Jenkins has to be initialized through the UI. The initial passwords can be fetched from the systems, and will be copied to `<VMDIR>/var/lib/jenkins/secrets`.
+
+```
+ansible centos -m fetch -a "src=/var/lib/jenkins/secrets/initialAdminPassword dest=." -i ansible/inventory -b
+```
+
+After logging in, install the typical plugins, and configure an initial admin user through the UI.
+
+Finally, enable in  `Manage Jenkins -> Configure Global Security ->  Security Realm -> Unix user/group database`
+
+After that, the Windows user Alice, Bob, Carol and Dave can log into Jenkins. 
 
 ## Other Ansible Helper Scripts
 
